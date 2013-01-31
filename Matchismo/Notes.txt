@@ -1,0 +1,9 @@
+
+ 
+
+Notes for lecture 2:
+
+ 1. Study indepth the use of strong nonatomic.
+ 2. Error to put nil in an array.
+ 3. Always call alloc init as a pair.
+ 4. Use of Lazy initialization in the user defined getter is encouraged.
