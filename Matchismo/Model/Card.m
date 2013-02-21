@@ -9,6 +9,9 @@
 #import "Card.h"
 
 @implementation Card
+- (NSString *) contents {
+    return @"MT";
+}
 
 - (int)match:(NSArray *)otherCards
 {

@@ -10,10 +10,33 @@
 
 @implementation PlayingCard
 
+- (int) match:(NSArray *)otherCards {
+    int score = 0;
+    
+    if(otherCards.count == 1) {
+        // There should only be one card in the array.  We will
+        // lastObject to access the card in the array.  If the
+        // array is empty, lastObject returns nil
+        PlayingCard *otherCard = [otherCards lastObject];
+        
+        if([otherCard.suit isEqualToString:self.suit]) {
+            score = 1;
+        } else if (otherCard.rank == self.rank) {
+            score = 4;
+        }
+        
+    }
+    
+    
+    
+    return score;
+}
+
 - (NSString *) contents {
     NSArray *rankStrings = [PlayingCard rankStrings];
     return [rankStrings [self.rank] stringByAppendingString:self.suit];
 }
+
 
 /// We have defined the setter and getter ourselves so we have to synthesis
 /// as we did in iOS 5.
