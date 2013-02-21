@@ -11,11 +11,17 @@
 
 // Private API has ability to set and get. (readwrite)
 @property (readwrite,nonatomic) int score;
+@property (readwrite,nonatomic) NSString *resultString;
 @property (strong, nonatomic) NSMutableArray *cards;
 @end
 
 
 @implementation CardMatchingGame
+
+- (NSString *) resultString {
+    if(!_resultString) _resultString = @"Result: New Game";
+    return _resultString;
+}
 
 - (NSMutableArray *) cards {
     if(!_cards) _cards = [[NSMutableArray alloc] init];
@@ -32,10 +38,11 @@
 
 - (void)flipCardAtIndex:(NSUInteger)index {
     Card *card = [self cardatIndex:index];
-    
+
     if(!card.isUnplayable) {
+        self.resultString = [NSString stringWithFormat:@"Result: Flipped %@", card.contents];
         if(!card.isFaceUp) {
-            // Loop thru the other cards finding a faceup palyable one.
+            // Loop thru the other cards finding a faceup playable one.
             for( Card *otherCard in self.cards ) {
                 
                 if(otherCard.isFaceUp && !otherCard.isUnplayable) {
@@ -49,14 +56,18 @@
                         card.unPlayable = YES;
                         // scale the successful match.
                         self.score += matchScore * MATCH_BONUS;
+                        self.resultString = [NSString stringWithFormat:@"Result: Matched %@&%@ for %d points",
+                                             card.contents, otherCard.contents, (matchScore * MATCH_BONUS)];
                     } else {
                         otherCard.faceUp = NO;
                         // if we select 2 and fail, charge a penalty
                         self.score -= MATCH_PENALTY;
+                        self.resultString = [NSString stringWithFormat:@"Result: %@ and %@ don't match, %d point penalty",
+                                             card.contents, otherCard.contents, MATCH_PENALTY];
                     }
                 }
             }
-            // charge a penslty yo yurn the card over.
+            // charge a penalty to turn the card over.
             self.score -= FLIP_COST;
         }
         card.faceUp = !card.isFaceUp;
