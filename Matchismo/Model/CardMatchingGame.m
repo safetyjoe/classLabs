@@ -61,34 +61,37 @@
                     // We now have enough cards to test for a match.
                     if(otherCards.count == self.matchLevel) {
                         // Create a local string to hold all the card contents for display.
-                        NSMutableString *cardsString = [[NSMutableString alloc] init];
-                        [cardsString appendString:card.contents];
+                        NSMutableArray *cardList = [[NSMutableArray alloc] init];
+                        [cardList addObject:card];
                         int matchScore = [card match:otherCards matchLevel:self.matchLevel];
 
                         // If it is a match, all cards become unplayable.
                         if(matchScore) {
                             for( Card *otherCard in otherCards ) {
-                                [cardsString appendString:otherCard.contents];
+                                [cardList addObject:otherCard];
                                 otherCard.unPlayable = YES;
                             }
                             card.unPlayable = YES;
-                            
+                            [cardList componentsJoinedByString:@"&"];
                             // scale the successful match.
                             self.score += matchScore * MATCH_BONUS;
+                            NSLog(@"Test %@", [cardList componentsJoinedByString:@"&"]);
                             self.resultString = [NSString stringWithFormat:@"Result: Matched %@ for %d points",
-                                                 cardsString, (matchScore * MATCH_BONUS)];
+                                                [cardList componentsJoinedByString:@"&"], (matchScore * MATCH_BONUS)];
                         } else {
                             for( Card *otherCard in otherCards ) {
-                                [cardsString appendString:otherCard.contents];
+                                [cardList addObject:otherCard];
                                 otherCard.faceUp = NO;
                             }
+                            [cardList componentsJoinedByString:@"&"];
                             // if we select 2 and fail, charge a penalty
                             self.score -= MATCH_PENALTY;
+                            NSLog(@"Test %@", [cardList componentsJoinedByString:@"&"]);
                             self.resultString = [NSString stringWithFormat:@"Result: %@ don't match, %d point penalty",
-                                                 cardsString, MATCH_PENALTY];
+                                                 [cardList componentsJoinedByString:@"&"], MATCH_PENALTY];
                         }
                     }
-                    //NSLog(@"Test for componets %@", [otherCards componentsJoinedByString:@"&"]);
+                    NSLog(@"Test for componets %@", [otherCards componentsJoinedByString:@"&"]);
                 }
             } // for loop
             // charge a penalty to turn the card over.
