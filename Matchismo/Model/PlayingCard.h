@@ -14,6 +14,7 @@
 @property (strong, nonatomic) NSString *rankString;
 
 /// Public methods.
+//- (int)match:(NSMutableArray *)otherCards matchLevel:(NSUInteger)matchLevel;
 + (NSArray*) validSuits;
 + (NSUInteger) maxRank;
 

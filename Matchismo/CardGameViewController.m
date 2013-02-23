@@ -18,14 +18,21 @@
 @property (strong, nonatomic) IBOutletCollection(UIView) NSArray *cardButtons;
 @property (strong, nonatomic) CardMatchingGame *game;
 @property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
+@property (weak, nonatomic) IBOutlet UILabel *resultLabel;
+@property (weak, nonatomic) IBOutlet UIButton *dealButton;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *modeSelector;
 @end
 
 @implementation CardGameViewController
 
+- (void)viewDidLoad {
+    self.modeSelector.enabled = YES;
+    [self updateUI];
+}
 
 // Lazy instantiation for the game.
 - (CardMatchingGame *) game {
-    // Allocate the deck wof cards on the fly, we no longer need theDeck object.
+    // Allocate the deck of cards on the fly, we no longer need theDeck object.
     if(!_game) _game = [[CardMatchingGame alloc] initWithCardCount:self.cardButtons.count
                                                          usingDeck:[[PlayingCardDeck alloc] init]];
     return _game;
@@ -50,6 +57,12 @@
         cardButton.alpha = card.unPlayable ? 0.3 : 1.0;
     }
     self.scoreLabel.text = [NSString stringWithFormat:@"Score: %d", self.game.score];
+    // The game controls the content of the string.  The controller owns the label.
+    self.resultLabel.text = self.game.resultString;
+    // The controller keeps a value for match level that will not change from
+    // game to game unless the user changes it.
+    self.game.matchLevel = self.modeSelector.selectedSegmentIndex + 1;
+
 }
 
 // Define setter for flipCount
@@ -63,7 +76,17 @@
 - (IBAction)flipCard:(UIButton *)sender {
     [self.game flipCardAtIndex:[self.cardButtons indexOfObject:sender]];
     self.flipCount++;
+    self.modeSelector.enabled = NO;
     [self updateUI];
 }
 
+// Action defined when the deal button is pressed and released.
+- (IBAction)newGame:(UIButton *)sender {
+    self.game = nil;
+    self.flipCount = 0;
+    self.modeSelector.enabled = YES;
+
+    [self updateUI];
+    NSLog(@"Deal button pressed");
+}
 @end

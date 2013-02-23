@@ -13,10 +13,16 @@
 @property (readwrite,nonatomic) int score;
 @property (readwrite,nonatomic) NSString *resultString;
 @property (strong, nonatomic) NSMutableArray *cards;
+
 @end
 
 
 @implementation CardMatchingGame
+
+- (NSUInteger) matchLevel {
+    _matchLevel = (_matchLevel <= 1) ? 1 : 2;
+    return _matchLevel;
+}
 
 - (NSString *) resultString {
     if(!_resultString) _resultString = @"Result: New Game";
@@ -39,41 +45,58 @@
 - (void)flipCardAtIndex:(NSUInteger)index {
     Card *card = [self cardatIndex:index];
 
+    // If the card just selected is playable.
     if(!card.isUnplayable) {
         self.resultString = [NSString stringWithFormat:@"Result: Flipped %@", card.contents];
+
+        // If the card selected is not face up
         if(!card.isFaceUp) {
+            // Make local storage for our other cards. Gets celaned up automatically.
+            NSMutableArray *otherCards = [[NSMutableArray alloc] init];
             // Loop thru the other cards finding a faceup playable one.
             for( Card *otherCard in self.cards ) {
-                
                 if(otherCard.isFaceUp && !otherCard.isUnplayable) {
-                    // match requires an NSArray.  This is a tool to create
-                    // an array of objects on the fly with one element.
-                    int matchScore = [card match:@[otherCard]];
-                    
-                    // If it is a match, both cards become unplayable.
-                    if(matchScore) {
-                        otherCard.unPlayable = YES;
-                        card.unPlayable = YES;
-                        // scale the successful match.
-                        self.score += matchScore * MATCH_BONUS;
-                        self.resultString = [NSString stringWithFormat:@"Result: Matched %@&%@ for %d points",
-                                             card.contents, otherCard.contents, (matchScore * MATCH_BONUS)];
-                    } else {
-                        otherCard.faceUp = NO;
-                        // if we select 2 and fail, charge a penalty
-                        self.score -= MATCH_PENALTY;
-                        self.resultString = [NSString stringWithFormat:@"Result: %@ and %@ don't match, %d point penalty",
-                                             card.contents, otherCard.contents, MATCH_PENALTY];
+                    [otherCards addObject:otherCard];
+                    NSLog(@"otherCards: %@  MatchLevel is %d", otherCards, self.matchLevel);
+                    // We now have enough cards to test for a match.
+                    if(otherCards.count == self.matchLevel) {
+                        // Create a local string to hold all the card contents for display.
+                        NSMutableString *cardsString = [[NSMutableString alloc] init];
+                        [cardsString appendString:card.contents];
+                        int matchScore = [card match:otherCards matchLevel:self.matchLevel];
+
+                        // If it is a match, all cards become unplayable.
+                        if(matchScore) {
+                            for( Card *otherCard in otherCards ) {
+                                [cardsString appendString:otherCard.contents];
+                                otherCard.unPlayable = YES;
+                            }
+                            card.unPlayable = YES;
+                            
+                            // scale the successful match.
+                            self.score += matchScore * MATCH_BONUS;
+                            self.resultString = [NSString stringWithFormat:@"Result: Matched %@ for %d points",
+                                                 cardsString, (matchScore * MATCH_BONUS)];
+                        } else {
+                            for( Card *otherCard in otherCards ) {
+                                [cardsString appendString:otherCard.contents];
+                                otherCard.faceUp = NO;
+                            }
+                            // if we select 2 and fail, charge a penalty
+                            self.score -= MATCH_PENALTY;
+                            self.resultString = [NSString stringWithFormat:@"Result: %@ don't match, %d point penalty",
+                                                 cardsString, MATCH_PENALTY];
+                        }
                     }
+                    //NSLog(@"Test for componets %@", [otherCards componentsJoinedByString:@"&"]);
                 }
-            }
+            } // for loop
             // charge a penalty to turn the card over.
             self.score -= FLIP_COST;
-        }
+        } // not face up.
         card.faceUp = !card.isFaceUp;
     }
 }
-
 
 - (id)initWithCardCount:(NSUInteger)count
               usingDeck:(Deck *) deck{
@@ -91,6 +114,5 @@
     }
     return self;
 }
-
 
 @end

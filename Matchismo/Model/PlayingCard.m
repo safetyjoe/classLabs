@@ -14,9 +14,7 @@
     int score = 0;
     
     if(otherCards.count == 1) {
-        // There should only be one card in the array.  We will
-        // lastObject to access the card in the array.  If the
-        // array is empty, lastObject returns nil
+        // There should only be one card in the array.
         PlayingCard *otherCard = [otherCards lastObject];
         
         if([otherCard.suit isEqualToString:self.suit]) {
@@ -26,10 +24,57 @@
         }
         
     }
-    
-    
-    
     return score;
+}
+
+- (int) match:(NSMutableArray *)otherCards matchLevel:(NSUInteger)matchLevel {
+    NSUInteger suitScore = 1 * matchLevel;
+    NSUInteger rankScore = 4 * matchLevel;
+    
+    if(otherCards.count == matchLevel) {
+        
+        for(PlayingCard *otherCard in otherCards) {
+            if(!([otherCard.suit isEqualToString:self.suit])) {
+                suitScore = 0;
+            }
+        }
+        for(PlayingCard *otherCard in otherCards) {
+            if(!(otherCard.rank == self.rank)) {
+                rankScore = 0;
+            }
+        }
+        
+        /*
+         if([[[otherCards objectAtIndex:0] suit] isEqualToString:self.suit] &&
+            [[[otherCards objectAtIndex:1] suit] isEqualToString:self.suit]) {
+             score = 1 * matchLevel;
+         } else if([[otherCards objectAtIndex:0] rank] == self.rank &&
+             [[otherCards objectAtIndex:1] rank] == self.rank) {
+             score = 4 * matchLevel;
+         }
+
+        for(int i=0; i<matchLevel; i++) {
+            if([[[otherCards objectAtIndex:i] suit] isEqualToString:self.suit]) {
+                score += 1;
+            } else {
+                score = 0;
+                break;
+            }
+        }
+        if(!score) {
+            for(int i=0; i<matchLevel; i++) {
+                if([[otherCards objectAtIndex:i] rank] == self.rank) {
+                    score += 4;
+                } else {
+                    score = 0;
+                    break;
+                }
+            }
+        }
+        */
+}
+    NSLog(@"RankScore %d, SuitScore %d PlayingCard Match otherCards: %@", rankScore, suitScore, otherCards);
+    return(suitScore+rankScore);
 }
 
 - (NSString *) contents {
