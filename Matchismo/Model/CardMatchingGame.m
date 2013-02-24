@@ -72,7 +72,6 @@
                                 otherCard.unPlayable = YES;
                             }
                             card.unPlayable = YES;
-                            [cardList componentsJoinedByString:@"&"];
                             // scale the successful match.
                             self.score += matchScore * MATCH_BONUS;
                             self.resultString = [NSString stringWithFormat:@"Result: Matched %@ for %d points",
@@ -82,7 +81,6 @@
                                 [cardList addObject:otherCard];
                                 otherCard.faceUp = NO;
                             }
-                            [cardList componentsJoinedByString:@"&"];
                             // if we select 2 and fail, charge a penalty
                             self.score -= MATCH_PENALTY;
                             self.resultString = [NSString stringWithFormat:@"Result: %@ don't match, %d point penalty",
