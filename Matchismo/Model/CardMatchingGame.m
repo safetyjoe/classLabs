@@ -75,7 +75,6 @@
                             [cardList componentsJoinedByString:@"&"];
                             // scale the successful match.
                             self.score += matchScore * MATCH_BONUS;
-                            NSLog(@"Test %@", [cardList componentsJoinedByString:@"&"]);
                             self.resultString = [NSString stringWithFormat:@"Result: Matched %@ for %d points",
                                                 [cardList componentsJoinedByString:@"&"], (matchScore * MATCH_BONUS)];
                         } else {
@@ -86,12 +85,11 @@
                             [cardList componentsJoinedByString:@"&"];
                             // if we select 2 and fail, charge a penalty
                             self.score -= MATCH_PENALTY;
-                            NSLog(@"Test %@", [cardList componentsJoinedByString:@"&"]);
                             self.resultString = [NSString stringWithFormat:@"Result: %@ don't match, %d point penalty",
                                                  [cardList componentsJoinedByString:@"&"], MATCH_PENALTY];
                         }
                     }
-                    NSLog(@"Test for componets %@", [otherCards componentsJoinedByString:@"&"]);
+                    NSLog(@"Test for components %@", [otherCards componentsJoinedByString:@"&"]);
                 }
             } // for loop
             // charge a penalty to turn the card over.

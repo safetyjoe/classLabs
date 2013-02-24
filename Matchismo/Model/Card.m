@@ -25,15 +25,9 @@
     return score;
 }
 
+// Currently just provides a function for derived classes to overload.
 - (int)match:(NSArray *)otherCards matchLevel:(NSUInteger)matchLevel
 {
-    int score = 0;
-    
-    for(Card *card in otherCards) {
-        if([card.contents isEqualToString:self.contents])
-            score = 1;
-    }
-    
-    return score;
+    return[self match:otherCards];
 }
 @end

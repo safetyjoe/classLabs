@@ -39,17 +39,25 @@
 }
 
 - (void)setCardButtons:(NSArray *)cardButtons {
+    UIImage *cardBackImage = [UIImage imageNamed:@"IMG_0607.jpg"];
+    UIImage *blankImage = [[UIImage alloc] init];
     _cardButtons = cardButtons;
+    for(UIButton *cardButton in _cardButtons) {
+        [cardButton setImage:cardBackImage forState:UIControlStateNormal];
+      [cardButton setImage:blankImage forState:UIControlStateSelected];
+      [cardButton setImage:blankImage forState:UIControlStateSelected|UIControlStateDisabled];
+
+    }
     [self updateUI];
 }
 
 - (void) updateUI{
+
     for(UIButton *cardButton in self.cardButtons) {
         // Use the model "game" to update the UI.
         Card *card = [self.game cardatIndex:[self.cardButtons indexOfObject:cardButton]];
         [cardButton setTitle:card.contents forState:UIControlStateSelected];
         [cardButton setTitle:card.contents forState:UIControlStateSelected|UIControlStateDisabled];
-        
         cardButton.selected = card.isFaceUp;
         // Make the disabled or un-tappable if the card is unplayable.
         cardButton.enabled = !card.isUnplayable;
