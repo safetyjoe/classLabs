@@ -49,26 +49,30 @@
 #define MATCH_BONUS 4
 #define MATCH_PENALTY 2
 
+#define FLIP_STRING [NSString stringWithFormat:@"Result: Flipped %@", card.contents]
+#define MATCH_STRING [NSString stringWithFormat:@"Result: Matched %@ for %d points",[cardList componentsJoinedByString:@"&"], (matchScore * MATCH_BONUS)]
+#define MISMATCH_STRING [NSString stringWithFormat:@"Result: %@ don't match, %d point penalty", [cardList componentsJoinedByString:@"&"], MATCH_PENALTY]
+
+
 - (void)flipCardAtIndex:(NSUInteger)index {
     Card *card = [self cardatIndex:index];
 
     // If the card just selected is playable.
     if(!card.isUnplayable) {
-        self.resultString = [NSString stringWithFormat:@"Result: Flipped %@", card.contents];
         // If the card selected is not face up
         if(!card.isFaceUp) {
-            // Add a card to the history list each time we turn one over.
-            [self.historyList addObject:card];
-            // Make local storage for our other cards. Gets celaned up automatically.
+            self.resultString = FLIP_STRING;
+           // Add a card to the history list each time we turn one over.
+            [self.historyList addObject:[self resultString]];
+            // Make storage for our other cards. Gets cleaned up automatically.
             NSMutableArray *otherCards = [[NSMutableArray alloc] init];
             // Loop thru the other cards finding a faceup playable one.
             for( Card *otherCard in self.cards ) {
                 if(otherCard.isFaceUp && !otherCard.isUnplayable) {
                     [otherCards addObject:otherCard];
-                    NSLog(@"otherCards: %@  MatchLevel is %d", otherCards, self.matchLevel);
                     // We now have enough cards to test for a match.
                     if(otherCards.count == self.matchLevel) {
-                        // Create a local string to hold all the card contents for display and
+                        // Create an NSArray to hold all the card contents for display and
                         // add the current card to it to be used later.
                         NSMutableArray *cardList = [[NSMutableArray alloc] init];
                         [cardList addObject:card];
@@ -83,8 +87,7 @@
                             card.unPlayable = YES;
                             // scale the successful match.
                             self.score += matchScore * MATCH_BONUS;
-                            self.resultString = [NSString stringWithFormat:@"Result: Matched %@ for %d points",
-                                                [cardList componentsJoinedByString:@"&"], (matchScore * MATCH_BONUS)];
+                            self.resultString = MATCH_STRING;
                         } else {
                             for( Card *otherCard in otherCards ) {
                                 [cardList addObject:otherCard];
@@ -92,11 +95,9 @@
                             }
                             // if we select 2 and fail, charge a penalty
                             self.score -= MATCH_PENALTY;
-                            self.resultString = [NSString stringWithFormat:@"Result: %@ don't match, %d point penalty",
-                                                 [cardList componentsJoinedByString:@"&"], MATCH_PENALTY];
+                            self.resultString = MISMATCH_STRING;
                         }
                     }
-                    NSLog(@"Test for components %@", [otherCards componentsJoinedByString:@"&"]);
                 }
             } // for loop
             // charge a penalty to turn the card over.

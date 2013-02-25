@@ -98,7 +98,7 @@
     self.modeSelector.enabled = YES;
     self.historySlider.value = 0;
     [self updateUI];
-    NSLog(@"Deal button pressed");
+    //NSLog(@"Deal button pressed");
 }
 
 // Action when the slider changes value;
@@ -106,11 +106,10 @@
     self.resultLabel.alpha = 0.6;
     int play = (int)self.historySlider.value;
     if(play) {
-        self.game.resultString =
-            [NSString stringWithFormat:@"History: Card at flip number %d - %@",play,[self.game.historyList[play-1] contents]];
+        self.game.resultString = self.game.historyList[play-1];
     }
     [self updateUI];
-    NSLog(@"History Value = %d", (int)self.historySlider.value);
+    //NSLog(@"History Value = %d", (int)self.historySlider.value);
 }
 
 
