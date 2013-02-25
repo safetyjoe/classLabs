@@ -23,7 +23,8 @@
 
 // Public API has only a getter (readonly)
 @property (readonly,nonatomic) int score;
-@property (readonly,nonatomic) NSString *resultString;
+@property (strong,nonatomic) NSString *resultString;
+@property (readonly,nonatomic) NSMutableArray *historyList;
 // Represents the number of other cards to match with
 // the selected card.
 @property (nonatomic) NSUInteger matchLevel;

@@ -21,6 +21,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *resultLabel;
 @property (weak, nonatomic) IBOutlet UIButton *dealButton;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *modeSelector;
+@property (weak, nonatomic) IBOutlet UISlider *historySlider;
 @end
 
 @implementation CardGameViewController
@@ -44,9 +45,9 @@
     _cardButtons = cardButtons;
     for(UIButton *cardButton in _cardButtons) {
         [cardButton setImage:cardBackImage forState:UIControlStateNormal];
-      [cardButton setImage:blankImage forState:UIControlStateSelected];
-      [cardButton setImage:blankImage forState:UIControlStateSelected|UIControlStateDisabled];
-
+        [cardButton setImage:blankImage forState:UIControlStateSelected];
+        [cardButton setImage:blankImage forState:UIControlStateSelected|UIControlStateDisabled];
+        [cardButton setImageEdgeInsets:UIEdgeInsetsMake(6.0, 6.0, 6.0, 6.0)];
     }
     [self updateUI];
 }
@@ -70,7 +71,6 @@
     // The controller keeps a value for match level that will not change from
     // game to game unless the user changes it.
     self.game.matchLevel = self.modeSelector.selectedSegmentIndex + 1;
-
 }
 
 // Define setter for flipCount
@@ -84,7 +84,10 @@
 - (IBAction)flipCard:(UIButton *)sender {
     [self.game flipCardAtIndex:[self.cardButtons indexOfObject:sender]];
     self.flipCount++;
+    self.historySlider.maximumValue = [self.game.historyList count];
+    self.historySlider.value = self.historySlider.maximumValue;
     self.modeSelector.enabled = NO;
+    self.resultLabel.alpha = 1.0;
     [self updateUI];
 }
 
@@ -93,8 +96,22 @@
     self.game = nil;
     self.flipCount = 0;
     self.modeSelector.enabled = YES;
-
+    self.historySlider.value = 0;
     [self updateUI];
     NSLog(@"Deal button pressed");
 }
+
+// Action when the slider changes value;
+- (IBAction)reviewHistory:(id)sender {
+    self.resultLabel.alpha = 0.6;
+    int play = (int)self.historySlider.value;
+    if(play) {
+        self.game.resultString =
+            [NSString stringWithFormat:@"History: Card at flip number %d - %@",play,[self.game.historyList[play-1] contents]];
+    }
+    [self updateUI];
+    NSLog(@"History Value = %d", (int)self.historySlider.value);
+}
+
+
 @end

@@ -11,7 +11,8 @@
 
 // Private API has ability to set and get. (readwrite)
 @property (readwrite,nonatomic) int score;
-@property (readwrite,nonatomic) NSString *resultString;
+//@property (readwrite,nonatomic) NSString *resultString;
+@property (readwrite,nonatomic) NSMutableArray *historyList;
 @property (strong, nonatomic) NSMutableArray *cards;
 
 @end
@@ -34,6 +35,12 @@
     return _cards;
 }
 
+- (NSMutableArray *) historyList {
+    if(!_historyList) _historyList = [[NSMutableArray alloc] init];
+    return _historyList;
+}
+
+
 - (Card *)cardatIndex:(NSUInteger)index {
     return(index < [self.cards count]) ? self.cards[index] : nil;
 }
@@ -48,9 +55,10 @@
     // If the card just selected is playable.
     if(!card.isUnplayable) {
         self.resultString = [NSString stringWithFormat:@"Result: Flipped %@", card.contents];
-
         // If the card selected is not face up
         if(!card.isFaceUp) {
+            // Add a card to the history list each time we turn one over.
+            [self.historyList addObject:card];
             // Make local storage for our other cards. Gets celaned up automatically.
             NSMutableArray *otherCards = [[NSMutableArray alloc] init];
             // Loop thru the other cards finding a faceup playable one.
@@ -60,7 +68,8 @@
                     NSLog(@"otherCards: %@  MatchLevel is %d", otherCards, self.matchLevel);
                     // We now have enough cards to test for a match.
                     if(otherCards.count == self.matchLevel) {
-                        // Create a local string to hold all the card contents for display.
+                        // Create a local string to hold all the card contents for display and
+                        // add the current card to it to be used later.
                         NSMutableArray *cardList = [[NSMutableArray alloc] init];
                         [cardList addObject:card];
                         int matchScore = [card match:otherCards matchLevel:self.matchLevel];
